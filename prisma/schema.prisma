@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id        Int     @default(autoincrement()) @id
+  firstName     String
+  lastName   String?
+  address   String ?
+  city  String?
+  state String?
+  zip String?
+  contact String?
+  email String?
+  schoolName String ?
+  photo String?
+  class String?
+  stream String?
+  gender String? 
+  birthDate String?
+  enrollmentDate DateTime  @default(now())  
+}
+
+
+model Post {
+  id        Int     @default(autoincrement()) @id
+  title     String? @unique
+  slug      String?
+  content   String?
+  category String?
+  subCategories String[] 
+  template   String?
+  tags      String[]
+  image     String?
+  readingTime String?
+  createdAt     DateTime  @default(now()) 
+  published Boolean @default(false)
+  author    User?   @relation(fields: [authorId], references: [id])
+  authorId  Int?
+ 
+}
+
+model Product {
+  id       Int     @default(autoincrement()) @id
+  name     String? @unique
+  slug String?
+  image    String?
+  description String?
+  category    String[]  
+  size  String?
+  weight  Decimal?  
+  price    Decimal 
+  sellingPrice Decimal
+  discount Decimal?
+  gst Decimal?
+  minimumQuantity Int?
+  usage String?
+  inStock Boolean @default(true) 
+}
+
+model Order {
+  id        Int     @default(autoincrement()) @id
+  orderNumber     String?
+  name        String
+  email       String
+  contact String?
+  address   String[]
+  totalProducts Int
+  amount Decimal
+  tax Decimal?
+  shippingCharge  Decimal ?
+  totalAmount Decimal
+  productDetails String[]
+  paymentID String?
+  PaymentStatus String ?
+  createdAt     DateTime  @default(now())  
+ 
+}
+
+model User {
+  id            Int     @default(autoincrement()) @id
+  name          String?
+  email         String?   @unique
+  password      String?
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  accounts      Account[]
+  sessions      Session[]
+  posts         Post[]
+  verificationTokens    VerificationToken[]
+}
+
+model Account {
+  id                 Int     @default(autoincrement()) @id
+  userId             Int
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  
+
+}
+model Session {
+  id         Int     @default(autoincrement()) @id
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model VerificationToken {
+  id         Int     @default(autoincrement()) @id
+  identifier String?
+  userId     Int?
+  token      String   @unique
+  expires    DateTime?   
+  user User? @relation(fields: [userId], references: [id])
+  @@unique([identifier, token])
+}
