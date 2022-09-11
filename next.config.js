@@ -4,7 +4,7 @@ const apiUrl = isProd
   : "http://localhost:8080/api";
 
 const publicUrl = isProd
-  ? "https://selenium.vecel.com"
+  ? "https://testing-black-nine.vercel.app"
   : "http://localhost:3000";
 
 module.exports = {
